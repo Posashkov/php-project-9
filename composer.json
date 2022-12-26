@@ -20,5 +20,9 @@
             "name": "Posashkov AS",
             "email": "alexpos@list.ru"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^1.9",
+        "squizlabs/php_codesniffer": "^3.7"
+    }
 }
