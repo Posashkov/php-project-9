@@ -1,5 +1,13 @@
 {% extends "layout/base.twig" %}
 
+{% block flash %}
+{% if flash|length > 0 %}
+    {% for flashType, flashMessages in flash %}
+    <div class="alert alert-{{ flashType }}" role="alert">{{ flashMessages|join('<br>') }}</div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">

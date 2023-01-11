@@ -5,10 +5,9 @@ namespace Hexlet\Code;
 class Connection
 {
     /**
-     * Connection
-     * @var
+     * @var Connection|null
      */
-    private static $conn;
+    private static ?Connection $conn;
 
 
     /**
@@ -20,11 +19,11 @@ class Connection
         if (array_key_exists('DATABASE_URL', $_ENV)) {
             $dbUrl = parse_url($_ENV['DATABASE_URL']);
             $params = [
-                'host' => $dbUrl['host'],
-                'port' => $dbUrl['port'],
-                'database' => ltrim($dbUrl['path'], '/'),
-                'user' => $dbUrl['user'],
-                'password' => $dbUrl['pass']
+                'host' => $dbUrl['host'] ?? '',
+                'port' => $dbUrl['port'] ?? '',
+                'database' => ltrim($dbUrl['path '] ?? '', '/'),
+                'user' => $dbUrl['user'] ?? '',
+                'password' => $dbUrl['pass'] ?? ''
             ];
         } else {
             $params = parse_ini_file('database.ini');
@@ -49,7 +48,7 @@ class Connection
         return $pdo;
     }
 
-    public static function get()
+    public static function get(): ?Connection
     {
         if (null === static::$conn) {
             static::$conn = new static();
@@ -58,7 +57,7 @@ class Connection
         return static::$conn;
     }
 
-    protected function __construct()
+    final public function __construct()
     {
     }
 }
