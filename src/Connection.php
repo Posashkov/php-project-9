@@ -21,7 +21,7 @@ class Connection
             $params = [
                 'host' => $dbUrl['host'] ?? '',
                 'port' => $dbUrl['port'] ?? '',
-                'database' => ltrim($dbUrl['path '] ?? '', '/'),
+                'database' => ltrim($dbUrl['path'] ?? '', '/'),
                 'user' => $dbUrl['user'] ?? '',
                 'password' => $dbUrl['pass'] ?? ''
             ];
