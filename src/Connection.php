@@ -7,7 +7,7 @@ class Connection
     /**
      * @var Connection|null
      */
-    private static ?Connection $conn;
+    private static $conn = null;
 
 
     /**
@@ -48,16 +48,19 @@ class Connection
         return $pdo;
     }
 
-    public static function get(): ?Connection
+    /**
+     * @return Connection
+     */
+    public static function get()
     {
-        if (null === static::$conn) {
-            static::$conn = new static();
+        if (is_null(self::$conn)) {
+            self::$conn = new self();
         }
 
-        return static::$conn;
+        return self::$conn;
     }
 
-    final public function __construct()
+    protected function __construct()
     {
     }
 }
