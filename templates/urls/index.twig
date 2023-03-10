@@ -1,0 +1,25 @@
+{% extends "layout/base.twig" %}
+
+{% block flash %}
+{% if flash|length > 0 %}
+    {% for flashType, flashMessages in flash %}
+    <div class="alert alert-{{ flashType }}" role="alert">{{ flashMessages|join('<br>') }}</div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>Сайты</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+        <tbody>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Последняя проверка</th>
+                <th>Код ответа</th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
