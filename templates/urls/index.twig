@@ -19,6 +19,16 @@
                 <th>Последняя проверка</th>
                 <th>Код ответа</th>
             </tr>
+            {% if urls|length > 0 %}
+                {% for url in urls %}
+                <tr>
+                    <td>{{ url.getId }}</td>
+                    <td><a href="{{ route }}{{ url.getId }}">{{ url.getName }}</a></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+            {% endif %}
         </tbody>
     </table>
 </div>

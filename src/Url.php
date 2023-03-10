@@ -119,7 +119,7 @@ class Url
             ':name' => $name
         ];
 
-        $return = $executor->select($sql, $sqlParams, self::$tableName);
+        $return = $executor->select($sql, $sqlParams);
 
         return (!$return) ? self::create([]) : self::create(reset($return));
     }
@@ -142,9 +142,33 @@ class Url
             ':id' => $id
         ];
 
-        $return = $executor->select($sql, $sqlParams, self::$tableName);
+        $return = $executor->select($sql, $sqlParams);
 
         return (!$return) ? self::create([]) : self::create(reset($return));
+    }
+
+    /**
+     * @return array<int, Url>|null
+     */
+    public static function getAll()
+    {
+        $pdo = Connection::get()->connect();
+        $executor = new PostgreSQLExecutor($pdo);
+
+        $sql = 'SELECT * FROM ' . self::$tableName . ' ORDER BY created_at DESC';
+        $sqlParams = [];
+
+        $selectedRows = $executor->select($sql, $sqlParams);
+
+        if (!$selectedRows) {
+            return null;
+        }
+
+        $returnUrls = array_map(function ($row) {
+            return self::create($row);
+        }, $selectedRows);
+
+        return $returnUrls;
     }
 
     /**

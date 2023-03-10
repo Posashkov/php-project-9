@@ -44,11 +44,17 @@ $app->get('/', function ($request, $response) {
     return $this->get('view')->render($response, 'index.twig', $params);
 })->setName('index');
 
-$app->get('/urls', function ($request, $response) {
-    $messages = $this->get('flash')->getMessages();
+$app->get('/urls', function ($request, $response) use ($router) {
+    try {
+        $urls = Url::getAll();
+    } catch (\Exception | \PDOException $e) {
+        $this->get('flash')->addMessage('danger', $e->getMessage());
+        return $response->withRedirect($router->urlFor('index'));
+    }
 
     $params = [
-        'flash' => $messages,
+        'route' => $router->urlFor('url.show', ['id' => '']), // TODO: переделать
+        'urls' => $urls,
     ];
 
     return $this->get('view')->render($response, 'urls/index.twig', $params);

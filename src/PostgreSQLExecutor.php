@@ -30,10 +30,9 @@ class PostgreSQLExecutor
     /**
      * @param string $sql
      * @param array<string, string|int> $params
-     * @param string $tableName
      * @return false|array<int, array<mixed>>
      */
-    public function select($sql, $params, $tableName)
+    public function select($sql, $params)
     {
         $data = $this->executeQuery($sql, $params);
 
