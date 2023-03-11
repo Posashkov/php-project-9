@@ -36,11 +36,12 @@ $app->add(TwigMiddleware::createFromContainer($app));
 // Routes
 $router = $app->getRouteCollector()->getRouteParser();
 
-$app->get('/', function ($request, $response) {
+$app->get('/', function ($request, $response) use ($router) {
     $messages = $this->get('flash')->getMessages();
 
     $params = [
         'flash' => $messages,
+        'currentPage' => $router->urlFor('index')
     ];
     return $this->get('view')->render($response, 'index.twig', $params);
 })->setName('index');
@@ -56,6 +57,7 @@ $app->get('/urls', function ($request, $response) use ($router) {
     $params = [
         'route' => $router->urlFor('url.show', ['id' => '']), // TODO: переделать
         'urls' => $urls,
+        'currentPage' => $router->urlFor('url.index')
     ];
 
     return $this->get('view')->render($response, 'urls/index.twig', $params);
@@ -73,7 +75,8 @@ $app->post('/urls', function ($request, $response) use ($router) {
 
     if (!$v->validate()) {
         $params = [
-            'errors' => $v->errors()
+            'errors' => $v->errors(),
+            'currentPage' => $router->urlFor('index')
         ];
         return $this->get('view')->render($response->withStatus(422), 'index.twig', $params);
     }
