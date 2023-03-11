@@ -9,6 +9,7 @@ use Slim\Views\TwigMiddleware;
 use Hexlet\Code\Connection;
 use Hexlet\Code\PostgreSQLExecutor;
 use Hexlet\Code\Url;
+use Valitron\Validator;
 
 session_start();
 
@@ -65,8 +66,17 @@ $app->post('/urls', function ($request, $response) use ($router) {
 
     $newUrl = htmlspecialchars($parsedUrl['name']);
 
-    $errors = [];
-    // TODO: validator, error code 422
+    $v = new Valitron\Validator(['name' => $newUrl]);
+    $v->rule('required', 'name')->message('URL не должен быть пустым');
+    $v->rule('lengthMax', 'name', 25)->message('Некорректный URL. 255');
+    $v->rule('url', 'name')->message('Некорректный URL');
+
+    if (!$v->validate()) {
+        $params = [
+            'errors' => $v->errors()
+        ];
+        return $this->get('view')->render($response->withStatus(422), 'index.twig', $params);
+    }
 
     $urlId = 0;
     try {
@@ -87,11 +97,6 @@ $app->post('/urls', function ($request, $response) use ($router) {
         $this->get('flash')->addMessage('danger', 'Что-то пошло не так');
         return $response->withRedirect($router->urlFor('index'));
     }
-
-    /*if (count($errors) > 0) {
-        $this->get('flash')->addMessage('danger', implode('<br>', $errors));
-        return $response->withRedirect($router->urlFor('index'));
-    }*/
 
     $this->get('flash')->addMessage('success', 'Страница успешно добавлена');
 
