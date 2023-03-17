@@ -94,8 +94,6 @@ class Url
                 throw new \Exception('Something goes wrong. Can\'t store new url');
             }
             $this->setId($lastId);
-        } else {
-            // TODO: Update
         }
 
         return $this;

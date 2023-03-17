@@ -55,7 +55,7 @@ $app->get('/urls', function ($request, $response) use ($router) {
     }
 
     $params = [
-        'route' => $router->urlFor('url.show', ['id' => '']), // TODO: переделать
+        'router' => $router,
         'urls' => $urls,
         'currentPage' => $router->urlFor('url.index')
     ];
@@ -115,9 +115,7 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($route
         $url = Url::byId($id);
 
         if (!$url->getId()) {
-            // TODO: rediect to 404 page
-            $this->get('flash')->addMessage('danger', 'Страница не найдена');
-            return $response->withRedirect($router->urlFor('index'));
+            return $this->get('view')->render($response->withStatus(404), 'error404.twig');
         }
     } catch (\Exception | \PDOException $e) {
         $this->get('flash')->addMessage('danger', $e->getMessage());

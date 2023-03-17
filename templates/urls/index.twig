@@ -23,7 +23,7 @@
                 {% for url in urls %}
                 <tr>
                     <td>{{ url.getId }}</td>
-                    <td><a href="{{ route }}{{ url.getId }}">{{ url.getName }}</a></td>
+                    <td><a href="{{ router.urlFor('url.show', {'id': url.getId}) }}">{{ url.getName }}</a></td>
                     <td></td>
                     <td></td>
                 </tr>
