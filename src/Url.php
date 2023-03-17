@@ -54,7 +54,7 @@ class Url
     /**
      * @return string
      */
-    public function getCretedAt()
+    public function getCreatedAt()
     {
         return Carbon::parse($this->created_at);
     }
