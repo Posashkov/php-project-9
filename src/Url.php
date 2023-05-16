@@ -5,6 +5,7 @@ namespace Hexlet\Code;
 use Hexlet\Code\Connection;
 use Hexlet\Code\PostgreSQLExecutor;
 use Carbon\Carbon;
+use Hexlet\Code\UrlChecks;
 
 class Url
 {
@@ -67,6 +68,30 @@ class Url
         if (property_exists($this, $name)) {
             $this->$name = $value;
         }
+    }
+
+    /**
+     * @return array<int, UrlChecks>|null
+     */
+    public function getAllChecks()
+    {
+        if ($this->getId() <= 0) {
+            return null;
+        }
+
+        $urlChecks = UrlChecks::getAllByUrlId($this->getId());
+
+        return (!$urlChecks) ? null : $urlChecks;
+    }
+
+    /**
+     * @return UrlChecks|null
+     */
+    public function getLastCheck()
+    {
+        $urlChecks = $this->getAllChecks();
+
+        return (!$urlChecks) ? null : reset($urlChecks);
     }
 
     /**

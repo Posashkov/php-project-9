@@ -24,7 +24,7 @@
                 <tr>
                     <td>{{ url.getId }}</td>
                     <td><a href="{{ router.urlFor('url.show', {'id': url.getId}) }}">{{ url.getName }}</a></td>
-                    <td></td>
+                    <td>{{ url.getLastCheck.getCreatedAt }}</td>
                     <td></td>
                 </tr>
                 {% endfor %}

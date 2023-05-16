@@ -31,7 +31,7 @@
     </div>
 
     <h2 class="mt-5 mb-3">Проверки</h2>
-    <form method="post" action="/urls/{{ url.getId }}/checks">
+    <form method="post" action="{{ routeUrlCheck }}">
         <input type="submit" class="btn btn-primary" value="Запустить проверку">
     </form>
     <table class="table table-bordered table-hover" data-test="checks">
@@ -44,7 +44,18 @@
                 <th>description</th>
                 <th>Дата создания</th>
             </tr>
-            <!--?php foreach ($checks as $check): ?-->
+            {% if url.getAllChecks|length > 0 %}
+                {% for urlCheck in url.getAllChecks %}
+                <tr>
+                    <td>{{ urlCheck.getId }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ urlCheck.getCreatedAt }}</td>
+                </tr>
+                {% endfor %}
+            {% endif %}
         </tbody>
     </table>
 {% endblock %}

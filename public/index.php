@@ -9,6 +9,7 @@ use Slim\Views\TwigMiddleware;
 use Hexlet\Code\Connection;
 use Hexlet\Code\PostgreSQLExecutor;
 use Hexlet\Code\Url;
+use Hexlet\Code\UrlChecks;
 use Valitron\Validator;
 
 session_start();
@@ -126,9 +127,47 @@ $app->get('/urls/{id:[0-9]+}', function ($request, $response, $args) use ($route
 
     $params = [
         'flash' => $messages,
-        'url' => $url
+        'url' => $url,
+        'routeUrlCheck' => $router->urlFor('url.check', ['id' => (string)$url->getId()])
     ];
     return $this->get('view')->render($response, 'urls/show.twig', $params);
 })->setName('url.show');
+
+$app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use ($router) {
+    $id = $args['id'];
+
+    $urlId = 0;
+    try {
+        $url = Url::byId($id);
+        $urlId = $url->getId();
+    } catch (\Exception | \PDOException $e) {
+        $this->get('flash')->addMessage('danger', $e->getMessage());
+        return $response->withRedirect($router->urlFor('index'));
+    }
+
+    if ($urlId <= 0) {
+        $this->get('flash')->addMessage('danger', 'Что-то пошло не так');
+        return $response->withRedirect($router->urlFor('index'));
+    }
+
+    // проверка урла
+    $urlCheckId = 0;
+    try {
+        $urlCheck = new UrlChecks();
+        $urlCheckId = $urlCheck->setUrlId($urlId)->store()->getId();
+    } catch (\Exception | \PDOException $e) {
+        $this->get('flash')->addMessage('danger', $e->getMessage());
+        return $response->withRedirect($router->urlFor('index'));
+    }
+
+    if ($urlCheckId <= 0) {
+        $this->get('flash')->addMessage('danger', 'Что-то пошло не так');
+        return $response->withRedirect($router->urlFor('index'));
+    }
+
+    $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+
+    return $response->withRedirect($router->urlFor('url.show', ['id' => (string)$urlId]));
+})->setName('url.check');
 
 $app->run();
