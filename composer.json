@@ -12,7 +12,8 @@
         "slim/twig-view": "^3.3",
         "slim/flash": "^0.4.0",
         "nesbot/carbon": "^2.66",
-        "vlucas/valitron": "^1.4"
+        "vlucas/valitron": "^1.4",
+        "guzzlehttp/guzzle": "^7.0"
     },
     "autoload": {
         "psr-4": {

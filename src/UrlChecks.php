@@ -10,7 +10,7 @@ class UrlChecks
 {
     private ?int $id;
     private int $url_id;
-    private ?string $status_code = '';
+    private string $status_code = '';
     private ?string $h1 = '';
     private ?string $title = '';
     private ?string $description = '';
@@ -59,6 +59,23 @@ class UrlChecks
     /**
      * @return string
      */
+    public function getStatusCode()
+    {
+        return $this->status_code;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setStatusCode(string $code = '')
+    {
+        $this->status_code = $code;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getCreatedAt()
     {
         return Carbon::parse($this->created_at);
@@ -66,7 +83,7 @@ class UrlChecks
 
     /**
      * @param string $name
-     * @param string|null $value
+     * @param string $value
      * @return void
      */
     private function setField($name, $value)
@@ -90,9 +107,10 @@ class UrlChecks
         $executor = new PostgreSQLExecutor($pdo);
 
         if (is_null($this->getId())) {
-            $sql = 'INSERT INTO ' . self::$tableName . ' (url_id) VALUES (:url_id)';
+            $sql = 'INSERT INTO ' . self::$tableName . ' (url_id, status_code) VALUES (:url_id, :status_code)';
             $sqlParams = [
-                ':url_id' => $this->getUrlId()
+                ':url_id' => $this->getUrlId(),
+                ':status_code' => $this->getStatusCode(),
             ];
 
             $lastId = (int)$executor->insert($sql, $sqlParams, self::$tableName);
@@ -150,7 +168,7 @@ class UrlChecks
         }
 
         foreach ($fields as $key => $value) {
-            $url->setField($key, $value);
+            $url->setField($key, (string)$value);
         }
 
         return $url;

@@ -11,6 +11,9 @@ use Hexlet\Code\PostgreSQLExecutor;
 use Hexlet\Code\Url;
 use Hexlet\Code\UrlChecks;
 use Valitron\Validator;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 
 session_start();
 
@@ -151,10 +154,40 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
     }
 
     // проверка урла
+    $statusCode = null;
+    try {
+        $guzzleClient = new Client();
+        $guzzleResponse = $guzzleClient->request('GET', $url->getName(), ['connect_timeout' => 3]);
+        $statusCode = $guzzleResponse->getStatusCode();
+    } catch (ConnectException $e) {
+        $statusCode = $e->getCode();
+
+        if (!$statusCode) {
+            $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться ');
+            return $response->withRedirect($router->urlFor('url.show', ['id' => (string)$urlId]));
+        }
+    } catch (RequestException $e) {
+        $statusCode = $e->getCode();
+
+        // $responseBody = '';
+        if ($e->hasResponse()) {
+            // if ($statusCode >= 400) {
+                // $responseBody = $e->getResponse();
+            // }
+        }
+    }
+
+    if (!$statusCode) {
+        $this->get('flash')->addMessage('danger', 'Произошла ошибка при проверке, не удалось подключиться ');
+        return $response->withRedirect($router->urlFor('url.show', ['id' => (string)$urlId]));
+    }
+
+
+
     $urlCheckId = 0;
     try {
         $urlCheck = new UrlChecks();
-        $urlCheckId = $urlCheck->setUrlId($urlId)->store()->getId();
+        $urlCheckId = $urlCheck->setUrlId($urlId)->setStatusCode((string)$statusCode)->store()->getId();
     } catch (\Exception | \PDOException $e) {
         $this->get('flash')->addMessage('danger', $e->getMessage());
         return $response->withRedirect($router->urlFor('index'));
@@ -165,7 +198,12 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
         return $response->withRedirect($router->urlFor('index'));
     }
 
-    $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+
+    if ($statusCode >= 400) {
+        $this->get('flash')->addMessage('warning', 'Проверка была выполнена успешно, но сервер ответил с ошибкой ');
+    } else {
+        $this->get('flash')->addMessage('success', 'Страница успешно проверена');
+    }
 
     return $response->withRedirect($router->urlFor('url.show', ['id' => (string)$urlId]));
 })->setName('url.check');
