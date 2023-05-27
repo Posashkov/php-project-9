@@ -14,6 +14,7 @@ use Valitron\Validator;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
+use DiDom\Document;
 
 session_start();
 
@@ -155,10 +156,12 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
 
     // проверка урла
     $statusCode = null;
+    $responseBody = '';
     try {
         $guzzleClient = new Client();
         $guzzleResponse = $guzzleClient->request('GET', $url->getName(), ['connect_timeout' => 3]);
         $statusCode = $guzzleResponse->getStatusCode();
+        $responseBody = (string) $guzzleResponse->getBody();
     } catch (ConnectException $e) {
         $statusCode = $e->getCode();
 
@@ -169,11 +172,12 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
     } catch (RequestException $e) {
         $statusCode = $e->getCode();
 
-        // $responseBody = '';
         if ($e->hasResponse()) {
-            // if ($statusCode >= 400) {
-                // $responseBody = $e->getResponse();
-            // }
+            $guzzleResponse = $e->getResponse();
+            if ($guzzleResponse instanceof \Psr\Http\Message\ResponseInterface) {
+                $statusCode = $guzzleResponse->getStatusCode();
+                $responseBody = (string) $guzzleResponse->getBody();
+            }
         }
     }
 
@@ -183,11 +187,16 @@ $app->post('/urls/{id:[0-9]+}/checks', function ($request, $response, $args) use
     }
 
 
+    $document = new Document($responseBody);
+    $documentTitle = optional($document->first('title'))->text() ?? '';
+    $documentH1 = optional($document->first('h1'))->text() ?? '';
+    $documentDescription = optional($document->first('meta[name="description"]'))->attr('content') ?? '';
 
     $urlCheckId = 0;
     try {
         $urlCheck = new UrlChecks();
-        $urlCheckId = $urlCheck->setUrlId($urlId)->setStatusCode((string)$statusCode)->store()->getId();
+        $urlCheckId = $urlCheck->setUrlId($urlId)->setStatusCode((string)$statusCode)->setH1($documentH1)
+        ->setTitle($documentTitle)->setDescrioption($documentDescription)->store()->getId();
     } catch (\Exception | \PDOException $e) {
         $this->get('flash')->addMessage('danger', $e->getMessage());
         return $response->withRedirect($router->urlFor('index'));

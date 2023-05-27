@@ -11,9 +11,9 @@ class UrlChecks
     private ?int $id;
     private int $url_id;
     private string $status_code = '';
-    private ?string $h1 = '';
-    private ?string $title = '';
-    private ?string $description = '';
+    private string $h1 = '';
+    private string $title = '';
+    private string $description = '';
     private string $created_at = '';
 
     private static string $tableName = 'url_checks';
@@ -76,6 +76,57 @@ class UrlChecks
     /**
      * @return string
      */
+    public function getH1()
+    {
+        return $this->h1;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setH1(string $string = '')
+    {
+        $this->h1 = $string;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setTitle(string $string = '')
+    {
+        $this->title = $string;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setDescrioption(string $string = '')
+    {
+        $this->description = $string;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getCreatedAt()
     {
         return Carbon::parse($this->created_at);
@@ -107,10 +158,14 @@ class UrlChecks
         $executor = new PostgreSQLExecutor($pdo);
 
         if (is_null($this->getId())) {
-            $sql = 'INSERT INTO ' . self::$tableName . ' (url_id, status_code) VALUES (:url_id, :status_code)';
+            $sql = 'INSERT INTO ' . self::$tableName .
+             ' (url_id, status_code, h1, title, description) VALUES (:url_id, :status_code, :h1, :title, :description)';
             $sqlParams = [
                 ':url_id' => $this->getUrlId(),
                 ':status_code' => $this->getStatusCode(),
+                ':h1' => $this->getH1(),
+                ':title' => $this->getTitle(),
+                ':description' => $this->getDescription()
             ];
 
             $lastId = (int)$executor->insert($sql, $sqlParams, self::$tableName);

@@ -13,7 +13,9 @@
         "slim/flash": "^0.4.0",
         "nesbot/carbon": "^2.66",
         "vlucas/valitron": "^1.4",
-        "guzzlehttp/guzzle": "^7.0"
+        "guzzlehttp/guzzle": "^7.0",
+        "imangazaliev/didom": "^2.0",
+        "laravel/helpers": "^1.6"
     },
     "autoload": {
         "psr-4": {
