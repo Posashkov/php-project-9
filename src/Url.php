@@ -108,9 +108,10 @@ class Url
         $executor = new PostgreSQLExecutor($pdo);
 
         if (is_null($this->getId())) {
-            $sql = 'INSERT INTO ' . self::$tableName . ' (name) VALUES (:name)';
+            $sql = 'INSERT INTO ' . self::$tableName . ' (name, created_at) VALUES (:name, :created_at)';
             $sqlParams = [
-                ':name' => $this->getName()
+                ':name' => $this->getName(),
+                ':created_at' => Carbon::now()->toDateTimeString()
             ];
 
             $lastId = (int)$executor->insert($sql, $sqlParams, self::$tableName);

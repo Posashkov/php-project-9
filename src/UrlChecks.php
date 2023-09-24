@@ -159,13 +159,15 @@ class UrlChecks
 
         if (is_null($this->getId())) {
             $sql = 'INSERT INTO ' . self::$tableName .
-             ' (url_id, status_code, h1, title, description) VALUES (:url_id, :status_code, :h1, :title, :description)';
+             ' (url_id, status_code, h1, title, description, created_at) VALUES ' .
+             '(:url_id, :status_code, :h1, :title, :description, :created_at)';
             $sqlParams = [
                 ':url_id' => $this->getUrlId(),
                 ':status_code' => $this->getStatusCode(),
                 ':h1' => $this->getH1(),
                 ':title' => $this->getTitle(),
-                ':description' => $this->getDescription()
+                ':description' => $this->getDescription(),
+                ':created_at' => Carbon::now()->toDateTimeString()
             ];
 
             $lastId = (int)$executor->insert($sql, $sqlParams, self::$tableName);

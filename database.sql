@@ -17,3 +17,9 @@ CREATE TABLE IF NOT EXISTS url_checks (
     description text,
     created_at timestamp without time zone DEFAULT Now()
 );
+
+ALTER TABLE urls DROP COLUMN created_at;
+ALTER TABLE urls ADD COLUMN created_at timestamp(0) NOT NULL;
+
+ALTER TABLE url_checks DROP COLUMN created_at;
+ALTER TABLE url_checks ADD COLUMN created_at timestamp(0) NOT NULL;
